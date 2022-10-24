@@ -1,0 +1,313 @@
+{
+	"info": {
+		"_postman_id": "86d54e15-1c28-4a21-8c25-4a8ec66b3956",
+		"name": "PF",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22530923"
+	},
+	"item": [
+		{
+			"name": "get key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Key in responseBody\", function () {\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"    pm.expect(jsonData).to.have.all.keys('key');\r",
+							"    pm.collectionVariables.set(\"auth_key\", jsonData.key);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "email",
+						"value": "samir-01@mail.ru",
+						"type": "text"
+					},
+					{
+						"key": "password",
+						"value": "samirvafa1514",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{base_url}}/api/key",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"key"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "api my pets",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{base_url}}/api/pets?filter=my_pets",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"pets"
+					],
+					"query": [
+						{
+							"key": "filter",
+							"value": "my_pets"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление питомца",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Save id and name\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"    pm.collectionVariables.set(\"petid\", jsonData.id);\r",
+							"pm.collectionVariables.set(\"name\", jsonData.name);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "age",
+							"value": "101",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "чудик",
+							"type": "text"
+						},
+						{
+							"key": "animal_type",
+							"value": "кошка",
+							"type": "text"
+						},
+						{
+							"key": "petid",
+							"value": "{{petid}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/create_pet_simple",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"create_pet_simple"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Изменение имени питомца запросом",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"New name not equal old name\", function () {\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"    pm.expect(pm.variables.get(\"name\")).to.not.eql(jsonData.name);\r",
+							"    pm.collectionVariables.set(\"name\", jsonData.name);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "age",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "animal_type",
+							"value": "Кошка",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Жанна-киска",
+							"type": "text"
+						},
+						{
+							"key": "pet_photo",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/pets/:pet_id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"pets",
+						":pet_id"
+					],
+					"variable": [
+						{
+							"key": "pet_id",
+							"value": "{{petid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение списка своих питомцев",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Name (Postman) equal name of response)\", function () {\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"    pm.expect(pm.collectionVariables.get(\"name\")).to.eql(jsonData.pets[0].name);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/pets?filter=my_pets",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"pets"
+					],
+					"query": [
+						{
+							"key": "filter",
+							"value": "my_pets"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "key",
+				"value": "auth_key",
+				"type": "string"
+			},
+			{
+				"key": "value",
+				"value": "59edb6b370ab3b1ddf7f5f16c4e1085e47d6c8ac6a66bc847f820759",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://petfriends.skillfactory.ru",
+			"type": "string"
+		},
+		{
+			"key": "auth_key",
+			"value": ""
+		},
+		{
+			"key": "petid",
+			"value": ""
+		},
+		{
+			"key": "name",
+			"value": ""
+		}
+	]
+}
